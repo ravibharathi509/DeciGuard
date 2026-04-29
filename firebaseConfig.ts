@@ -1,13 +1,9 @@
-// Import the functions you need from the SDKs you need
-import { getDatabase } from "firebase/database";
-
+// firebaseConfig.ts
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getDatabase } from "firebase/database";
+import { getAuth } from "firebase/auth";
+import { getFirestore } from "firebase/firestore"; 
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyD92TKAaK4l1a1Cufgrl71yC3-NNjQEmQ4",
   authDomain: "deciguard-be7a1.firebaseapp.com",
@@ -20,6 +16,9 @@ const firebaseConfig = {
 };
 
 // Initialize Firebase
-
 const app = initializeApp(firebaseConfig);
-export const db = getDatabase(app);
+
+// Export services
+export const auth = getAuth(app);
+export const db = getDatabase(app);        
+export const firestore = getFirestore(app); // Universal Logic-ku idhu dhaan main
