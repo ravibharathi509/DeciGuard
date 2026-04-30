@@ -1,132 +1,57 @@
-import { db } from '../../firebaseConfig';
-import { ref, set } from 'firebase/database';
-import React, { useEffect, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
-import { Audio } from 'expo-av';
-import * as Speech from 'expo-speech';
+import React from 'react';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
-export default function Index() {
-  const [dbLevel, setDbLevel] = useState(0);
-  const [status, setStatus] = useState("Silent");
-  const [hasSpoken, setHasSpoken] = useState(false);
-
-  // 🔊 Voice function 
-  const speakWarning = async () => {
-    const speaking = await Speech.isSpeakingAsync();
-    if (speaking) return; // already speakingனா skip
-
-    Speech.speak("Please maintain silence in the library", {
-      language: 'en-US',
-      pitch: 1.0,
-      rate: 0.9,
-    });
-  };
-
-  useEffect(() => {
-    startMonitoring();
-  }, []);
-
-  const startMonitoring = async () => {
-    const permission = await Audio.requestPermissionsAsync();
-    if (permission.status !== 'granted') return;
-
-    await Audio.setAudioModeAsync({
-      allowsRecordingIOS: true,
-      playsInSilentModeIOS: true,
-    });
-
-    const recording = new Audio.Recording();
-
-    await recording.prepareToRecordAsync(
-      Audio.RecordingOptionsPresets.HIGH_QUALITY
-    );
-
-    recording.setProgressUpdateInterval(500);
-
-    recording.setOnRecordingStatusUpdate((status) => {
-      if (status.metering != null) {
-        const level = Math.floor(status.metering + 160);
-        setDbLevel(level);
-        const deskId = "desk1"; // 🔥 unique id
-
-  // 🔥 FIREBASE SEND
-  set(ref(db, 'desks/' + deskId), {
-    level: level,
-    status: level > 100 ? "LOUD" : level > 70 ? "MODERATE" : "SILENT",
-    time: Date.now()
-  });
-
-
-        // 🔥 MAIN LOGIC
-        if (level > 100 && !hasSpoken) {
-          setStatus("TOO LOUD!");
-          speakWarning();
-          setHasSpoken(true); // speak only once
-        } 
-        else if (level > 70) {
-          setStatus("Moderate Noise");
-        } 
-        else {
-          setStatus("Silent");
-
-          // ✅ IMPORTANT FIX
-          Speech.stop();        // 🛑 stop voice immediately
-          setHasSpoken(false);  // 🔄 reset for next alert
-        }
-      }
-    });
-
-    await recording.startAsync();
-  };
-
+export default function TabIndex() {
   return (
-    <View style={[
-      styles.container, 
-      { backgroundColor: dbLevel > 100 ? '#ff4d4d' : '#111' }
-    ]}>
-      <Text style={styles.title}>📚 DeciGuard Smart Library</Text>
+    <ScrollView contentContainerStyle={styles.container}>
+      <Text style={styles.header}>Welcome to DeciGuard</Text>
+      
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Status</Text>
+        <Text style={styles.cardText}>Monitoring is active. Please check the Monitor tab for real-time noise levels.</Text>
+      </View>
 
-      <Text style={styles.db}>{dbLevel} dB</Text>
-
-      <Text style={[
-        styles.status,
-        { color: dbLevel > 100 ? 'red' : '#00ff99' }
-      ]}>
-        {status}
-      </Text>
-
-      {dbLevel > 100 && (
-        <Text style={styles.alert}>
-          ⚠️ PLEASE MAINTAIN SILENCE!
-        </Text>
-      )}
-    </View>
+      <View style={styles.card}>
+        <Text style={styles.cardTitle}>Library Rules</Text>
+        <Text style={styles.cardText}>1. Keep your mobile in silent mode.</Text>
+        <Text style={styles.cardText}>2. Group discussions are not allowed in the reading zone.</Text>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
+    padding: 20,
+    backgroundColor: '#f5f5f5',
+    flexGrow: 1,
   },
-  title: {
-    fontSize: 22,
-    color: '#fff',
-    marginBottom: 30,
+  header: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 20,
+    color: '#333',
   },
-  db: {
-    fontSize: 50,
-    color: '#00ffcc',
+  card: {
+    backgroundColor: '#fff',
+    padding: 15,
+    borderRadius: 10,
+    marginBottom: 15,
+    elevation: 3, // Shadow for Android
+    shadowColor: '#000', // Shadow for iOS
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
   },
-  status: {
-    fontSize: 24,
-    marginTop: 10,
-  },
-  alert: {
-    marginTop: 20,
+  cardTitle: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: 'yellow',
+    color: '#007bff',
+    marginBottom: 5,
+  },
+  cardText: {
+    fontSize: 16,
+    color: '#666',
+    lineHeight: 22,
   },
 });
