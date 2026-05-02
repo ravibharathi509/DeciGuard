@@ -1,3 +1,5 @@
+// login.tsx
+
 import React, { useState } from 'react';
 import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert } from 'react-native';
 import { auth } from '../firebaseConfig';
@@ -17,10 +19,7 @@ export default function Login() {
 
     try {
       await signInWithEmailAndPassword(auth, email, password);
-
-      // 🔥 After login → choose library screen
       router.replace('/chooseLibrary');
-
     } catch (error: any) {
       Alert.alert("Login Failed", error.message);
     }
@@ -28,11 +27,13 @@ export default function Login() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Librarian Login 🛡️</Text>
+      <Text style={styles.title}>DeciGuard Login 🛡️</Text>
+      <Text style={styles.subtitle}>Library Noise Monitoring System</Text>
 
       <TextInput
         style={styles.input}
         placeholder="Email"
+        placeholderTextColor="#7a7a7a"
         value={email}
         onChangeText={setEmail}
         autoCapitalize="none"
@@ -41,6 +42,7 @@ export default function Login() {
       <TextInput
         style={styles.input}
         placeholder="Password"
+        placeholderTextColor="#7a7a7a"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -50,21 +52,20 @@ export default function Login() {
         <Text style={styles.buttonText}>Login</Text>
       </TouchableOpacity>
 
-      {/* Signup */}
-      <TouchableOpacity 
-        onPress={() => router.push('/signup')} 
-        style={{marginTop: 20}}
+      <TouchableOpacity
+        onPress={() => router.push('/signup')}
+        style={{ marginTop: 20 }}
       >
-        <Text style={{color: '#007bff', textAlign: 'center'}}>
+        <Text style={styles.link}>
           New Librarian? Signup
         </Text>
       </TouchableOpacity>
 
-      <TouchableOpacity 
-        onPress={() => router.back()} 
-        style={{marginTop: 10}}
+      <TouchableOpacity
+        onPress={() => router.back()}
+        style={{ marginTop: 10 }}
       >
-        <Text style={{color: '#666', textAlign: 'center'}}>
+        <Text style={styles.backLink}>
           Go Back
         </Text>
       </TouchableOpacity>
@@ -73,33 +74,51 @@ export default function Login() {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    flex: 1, 
-    justifyContent: 'center', 
-    padding: 30, 
-    backgroundColor: '#fff' 
+  container: {
+    flex: 1,
+    justifyContent: 'center',
+    padding: 30,
+    backgroundColor: '#0B1F3A'
   },
-  title: { 
-    fontSize: 24, 
-    fontWeight: 'bold', 
-    marginBottom: 30, 
-    textAlign: 'center' 
+  title: {
+    fontSize: 30,
+    fontWeight: 'bold',
+    color: '#A8FF35',
+    textAlign: 'center',
+    marginBottom: 8
   },
-  input: { 
-    borderBottomWidth: 1, 
-    borderColor: '#ddd', 
-    marginBottom: 20, 
-    padding: 10, 
-    fontSize: 16 
+  subtitle: {
+    color: '#d8d8d8',
+    textAlign: 'center',
+    marginBottom: 30,
+    fontSize: 14
   },
-  button: { 
-    backgroundColor: '#111', 
-    padding: 15, 
-    borderRadius: 10, 
-    alignItems: 'center' 
+  input: {
+    backgroundColor: '#ffffff',
+    borderRadius: 12,
+    marginBottom: 18,
+    padding: 14,
+    fontSize: 16,
+    color: '#000'
   },
-  buttonText: { 
-    color: 'white', 
-    fontWeight: 'bold' 
+  button: {
+    backgroundColor: '#A8FF35',
+    padding: 15,
+    borderRadius: 12,
+    alignItems: 'center'
+  },
+  buttonText: {
+    color: '#0B1F3A',
+    fontWeight: 'bold',
+    fontSize: 16
+  },
+  link: {
+    color: '#A8FF35',
+    textAlign: 'center',
+    fontWeight: '600'
+  },
+  backLink: {
+    color: '#ddd',
+    textAlign: 'center'
   }
 });
